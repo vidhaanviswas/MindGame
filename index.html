@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game – Greek Alphabet</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top: game name + settings navbar -->
+  <nav class="navbar" aria-label="Main navigation">
+    <h1 class="navbar-title">Memory Game</h1>
+    <div class="navbar-settings">
+      <button type="button" class="btn-restart btn-nav-restart" id="navbar-restart-btn" title="Restart game (new shuffle)">Restart</button>
+      <label class="sound-toggle">
+        <input type="checkbox" id="mute-btn" aria-label="Mute sounds">
+        <span class="sound-label">Sound</span>
+      </label>
+      <label class="dark-toggle">
+        <input type="checkbox" id="dark-btn" aria-label="Dark mode">
+        <span class="dark-label">Dark</span>
+      </label>
+      <select id="theme-set" class="select-option select-nav" aria-label="Colour theme">
+        <option value="default">Default</option>
+        <option value="ocean">Ocean</option>
+        <option value="forest">Forest</option>
+        <option value="sunset">Sunset</option>
+      </select>
+    </div>
+  </nav>
+
+  <!-- Main: left = game board, right = statistics -->
+  <div class="app-main">
+    <!-- Left: full game (cards + overlays) -->
+    <section class="game-area" aria-label="Game board">
+      <div id="ready-overlay" class="ready-overlay" aria-hidden="false">
+        <div class="ready-count" id="ready-count">3</div>
+      </div>
+      <div id="game-overlay" class="game-overlay hidden" aria-hidden="true">
+        <div id="confetti-container" class="confetti-container" aria-hidden="true"></div>
+        <div class="overlay-content">
+          <h2 id="overlay-title">You won!</h2>
+          <p class="overlay-stats">
+            <span id="overlay-score">Score: 100</span>
+            <span id="overlay-moves">Moves: 0</span>
+            <span id="overlay-time">Time: 0:00</span>
+          </p>
+          <button type="button" class="btn-restart btn-restart-overlay" id="restart-overlay-btn">Play again</button>
+        </div>
+      </div>
+      <main id="card-grid" class="card-grid" role="grid" aria-label="Memory cards" tabindex="0"></main>
+    </section>
+
+    <!-- Right: statistics and controls -->
+    <aside class="statistics-sidebar" aria-label="Statistics and settings">
+      <details class="how-to-play" id="how-to-play">
+        <summary>How to play</summary>
+        <p>Match pairs. Click two cards—if they match, they stay open; if not, they flip back and you lose 4 points (or 1 life in Lives mode). Win by matching all pairs before score hits 0 or time runs out. <kbd>R</kbd> = Restart. <kbd>H</kbd> = Hint (once per game).</p>
+      </details>
+
+      <div class="stats-bar">
+        <div class="stat" id="stat-score">
+          <span class="stat-label">Score</span>
+          <span id="score" class="stat-value">100</span>
+        </div>
+        <div class="stat" id="stat-lives">
+          <span class="stat-label">Lives</span>
+          <span id="lives" class="stat-value">3</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Moves</span>
+          <span id="moves" class="stat-value">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Time</span>
+          <span id="timer" class="stat-value">0:00</span>
+        </div>
+        <div class="stat stat-best">
+          <span class="stat-label">Best</span>
+          <span id="best-score" class="stat-value">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Best time</span>
+          <span id="best-time" class="stat-value">—</span>
+        </div>
+      </div>
+
+      <div class="options-row">
+        <div class="option-group">
+          <span class="option-label">Difficulty</span>
+          <div class="difficulty-buttons">
+            <button type="button" class="btn-difficulty" data-difficulty="easy">Easy</button>
+            <button type="button" class="btn-difficulty active" data-difficulty="medium">Medium</button>
+            <button type="button" class="btn-difficulty" data-difficulty="hard">Hard</button>
+          </div>
+        </div>
+        <div class="option-group">
+          <span class="option-label">Symbols</span>
+          <select id="symbol-set" class="select-option" aria-label="Symbol set">
+            <option value="greek">Greek</option>
+            <option value="numbers">Numbers</option>
+            <option value="emojis">Emojis</option>
+          </select>
+        </div>
+        <div class="option-group">
+          <span class="option-label">Mode</span>
+          <select id="game-mode" class="select-option" aria-label="Game mode">
+            <option value="score">Score (100)</option>
+            <option value="lives">Lives (3)</option>
+          </select>
+        </div>
+        <div class="option-group option-group-inline">
+          <label class="checkbox-option">
+            <input type="checkbox" id="countdown-check" aria-label="Countdown 60 seconds">
+            <span>Countdown 60s</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="btn-action" id="hint-btn" title="Reveal one pair (once per game)">Hint (H)</button>
+        <button type="button" class="btn-action" id="undo-btn" title="Undo last move (once per game)" disabled>Undo</button>
+        <div class="restart-options">
+          <button type="button" class="btn-restart btn-restart-new" id="restart-btn" title="New shuffle (R)">New shuffle</button>
+          <button type="button" class="btn-restart btn-restart-same" id="restart-same-btn" title="Same board">Same board</button>
+        </div>
+      </div>
+
+      <div id="game-message" class="game-message hidden" aria-live="polite"></div>
+
+      <details class="stats-panel" id="stats-panel">
+        <summary>Statistics</summary>
+        <div class="stats-panel-content">
+          <p><span class="stats-key">Games played:</span> <span id="stat-games">0</span></p>
+          <p><span class="stats-key">Wins:</span> <span id="stat-wins">0</span></p>
+          <p><span class="stats-key">Best score:</span> <span id="stat-best-score">—</span></p>
+          <p><span class="stats-key">Best time:</span> <span id="stat-best-time">—</span></p>
+          <p><span class="stats-key">Last 5 scores:</span> <span id="score-history">—</span></p>
+        </div>
+      </details>
+
+      <footer class="game-footer">
+        <p class="footer-credit">eLitmus Assignment · Memory Game</p>
+      </footer>
+    </aside>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
