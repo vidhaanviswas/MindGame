@@ -2,6 +2,9 @@
 
 A simple, playable memory card-matching game built with HTML, CSS, and JavaScript. No frameworks, no backend. Ideal for eLitmus Management Trainee assignment and interview demos.
 
+Live link: https://vv-game.netlify.app/
+
+
 ---
 
 ## Features
@@ -185,3 +188,4 @@ memory-game/
 ---
 
 Good luck with your assignment and interview.
+
